@@ -1,5 +1,5 @@
 # Introduction
-This project represents a basic address API to manage address information. 
+This project represents a basic address API to manage address information. It's build using Swashbuckle and uses OpenAPI standard to work off of.
 
 # Requirements
 This project uses the .NET 5 Runtime & SDK along with the ASP.NET Core Framework.
@@ -22,6 +22,14 @@ The projects consists of the following directories and structure:
 - Services: Various non-statefull classes to perform tasks (such as pagination or calculation).
 - Utilities: Extension methods and helper methods.
 
+# Retrospective
+There's an issue with pagination where the HATEOAS links generated have an invalid ID (at least, if it's omitted from the request.) I initially wanted to handle this by using DTO's (as it's marked required by the domain model), but I've found it to be overkill. In hindsight, bad idea.
+
+There's also an issue with the ignoring of certain model properties, what seems to be a bug in SwaggerUI itself.
+For instance, the Id of the Address model class is marked as ReadOnly, and the generated schema does indicate it's a readonly.
+However, the SwaggerUI doc seems to just ignore this. Perhaps a bug on their part...
+
+I'm pretty proud of the pagination feature, I've written it before for my current job. The thing I like the most is that it's not coupled to specific domain and can be reused for nearly everything that requires a HATEOAS constraint.
 
 
 
