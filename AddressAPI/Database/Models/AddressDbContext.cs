@@ -3,6 +3,9 @@ using System.Reflection;
 
 namespace AddressAPI.Models
 {
+    /// <summary>
+    /// Represents the database connection to the Sqlite.
+    /// </summary>
     public class AddressDbContext : DbContext
     {
         public DbSet<Address> Addresses { get; set; }

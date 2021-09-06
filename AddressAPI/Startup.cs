@@ -1,14 +1,15 @@
 using AddressAPI.Models;
+using AddressAPI.Services;
+using AddressAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System;
-using System.IO;
-using System.Reflection;
+
 
 namespace AddressAPI
 {
@@ -28,11 +29,21 @@ namespace AddressAPI
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.EnableAnnotations();
                 c.UseAllOfToExtendReferenceSchemas();
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AddressAPI", Version = "v1" });
+                c.EnableAnnotations();
             });
             services.AddEntityFrameworkSqlite().AddDbContext<AddressDbContext>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSwaggerGenNewtonsoftSupport();
+            services.AddScoped<IDistanceCalculator, AfstandOrgDistanceCalculator>();
+            services.AddSingleton<IPaginationURICreator>(o =>
+            {
+                var accessor = o.GetRequiredService<IHttpContextAccessor>();
+                var request = accessor.HttpContext.Request;
+                var uri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent());
+                return new PaginationURICreator(uri);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
